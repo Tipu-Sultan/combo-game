@@ -16,7 +16,6 @@ lerna-debug.log*
 # Build artifacts
 build/
 dist/
-public/
 
 # Editor/IDE specific files
 .vscode/
