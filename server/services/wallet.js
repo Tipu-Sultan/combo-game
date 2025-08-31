@@ -4,7 +4,7 @@ const transactionModel = require('../models/transaction');
 const gameStatisticsModel = require('../models/gameStatistics');
 
 const deposit = async (userId, amount) => {
-  if (amount <= 0 || amount > 100000) {
+  if (amount < 1 || amount > 100000) {
     throw new Error('Invalid deposit amount');
   }
 
