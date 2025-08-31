@@ -27,7 +27,7 @@ const Games = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-6 font-bebas">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-white mb-6">Available Games</h1>
+        <h1 className="text-4xl font-bold text-white mb-6">Set Your Games</h1>
 
         <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
           <div className="flex items-center justify-between mb-4">
@@ -135,11 +135,14 @@ const Games = () => {
                 </div>
                 {result && (
                   <div className="text-center mb-6">
+                    <div>
+                      <h5>{result.game&& result.game}</h5>
+                    </div>
                     <p className="text-2xl font-semibold text-gray-900">
                       {result.message ||
                         (result.won ? "You won!" : "You lost!")}
                     </p>
-                    {result.winAmount > 0 && (
+                    {result.netAmount > 0 && (
                       <p
                         className={
                           result.won
@@ -149,9 +152,9 @@ const Games = () => {
                       >
                         {result.won
                           ? "Winnings: " +
-                            formatIndianCurrency(result.winAmount)
+                            formatIndianCurrency(result.netAmount)
                           : "Losings: " +
-                            formatIndianCurrency(result.winAmount)}
+                            formatIndianCurrency(result.netAmount)}
                       </p>
                     )}
                     <p className="text-lg text-gray-600">

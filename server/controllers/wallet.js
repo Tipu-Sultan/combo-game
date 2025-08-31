@@ -3,6 +3,7 @@ const walletService = require('../services/wallet');
 const deposit = async (req, res) => {
   try {
     const { amount } = req.body;
+    console.log('amount',amount)
     const result = await walletService.deposit(req.user.userId, amount);
     res.json(result);
   } catch (error) {

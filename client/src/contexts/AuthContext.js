@@ -1,13 +1,13 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI, userAPI } from '../services/api';
-import toast from 'react-hot-toast';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { authAPI, userAPI } from "../services/api";
+import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -29,9 +29,9 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      console.error('Auth initialization failed:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      console.error("Auth initialization failed:", error);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     } finally {
       setLoading(false);
     }
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       const userData = await userAPI.getProfile();
       setUser(userData);
       setIsAuthenticated(true);
-      toast.success('Login successful!');
+      toast.success("Login successful!");
       return response;
     } catch (error) {
       setIsAuthenticated(false);
@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
       const userProfile = await userAPI.getProfile();
       setUser(userProfile);
       setIsAuthenticated(true);
-      toast.success('Registration successful!');
+      toast.success("Registration successful!");
       return response;
     } catch (error) {
       setIsAuthenticated(false);
@@ -65,15 +65,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    authAPI.logout();
-    setUser(null);
-    setIsAuthenticated(false);
-    toast.success('Logged out successfully');
+  const logout = async () => {
+    try {
+      const response = await authAPI.logout(); // wait for backend logout
+      setUser(null);
+      setIsAuthenticated(false);
+      toast.success(response?.message || "Logged out successfully");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error(error.response?.data?.error || "Logout failed");
+    }
   };
 
   const updateUser = (userData) => {
-    setUser(prevUser => ({ ...prevUser, ...userData }));
+    setUser((prevUser) => ({ ...prevUser, ...userData }));
   };
 
   const refreshUserData = async () => {
@@ -82,7 +87,7 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       return userData;
     } catch (error) {
-      console.error('Failed to refresh user data:', error);
+      console.error("Failed to refresh user data:", error);
       throw error;
     }
   };
@@ -95,12 +100,8 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateUser,
-    refreshUserData
+    refreshUserData,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

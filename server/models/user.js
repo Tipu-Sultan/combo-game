@@ -36,6 +36,7 @@ const getUserBalance = async (userId, connection) => {
 };
 
 const updateUserBalance = async (userId, balance, connection) => {
+  console.log('userId,balance',userId,balance)
   await connection.query('UPDATE users SET balance = ? WHERE id = ?', [balance, userId]);
 };
 

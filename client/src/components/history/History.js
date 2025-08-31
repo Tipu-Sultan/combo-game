@@ -45,13 +45,14 @@ const History = () => {
           <h2 className="text-2xl font-semibold text-white mb-4">Game Statistics</h2>
           {loading ? (
             <div className="flex justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white">
+                <LoadingSpinner/>
+              </div>
             </div>
           ) : gameStatistics?.length === 0 ? (
             <div className="bg-white rounded-lg shadow-lg p-6">
               <p className="text-gray-600">
                 No game statistics available.
-                <LoadingSpinner/>
                 </p>
             </div>
           ) : (
@@ -81,13 +82,14 @@ const History = () => {
         <h2 className="text-2xl font-semibold text-white mb-4">Transaction History</h2>
         {loading ? (
           <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white">
+              <LoadingSpinner/>
+            </div>
           </div>
         ) : transactions.length === 0 ? (
           <div className="bg-white rounded-lg shadow-lg p-6">
             <p className="text-gray-600">
               No transactions yet.
-                <LoadingSpinner/>
               </p>
           </div>
         ) : (

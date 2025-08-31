@@ -134,8 +134,6 @@ const Wallet = () => {
             {transactions.length === 0 ? (
               <p className="text-gray-600">
                 No transactions yet.
-                <br></br>
-                <LoadingSpinner/>
                 </p>
             ) : (
               <div className="space-y-4">

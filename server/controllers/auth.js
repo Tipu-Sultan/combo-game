@@ -14,7 +14,11 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { valueType, password } = req.body;
-    const { token, user } = await authService.login(valueType, password);
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const userAgent = req.headers['user-agent'];
+
+    const { token, user } = await authService.login(valueType, password, ipAddress, userAgent);
+
     res.json({ message: 'Login successful', token, user });
   } catch (error) {
     console.error('Login error:', error.message);
@@ -22,4 +26,24 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const logout = async (req, res) => {
+  try {
+    // raw token from header
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+
+    await authService.logout(token);
+
+    return res.json({ message: 'Logout successful' });
+  } catch (error) {
+    console.error('Logout error:', error.message);
+    return res.status(500).json({ error: 'Logout failed' });
+  }
+};
+
+module.exports = { register, login,logout };
