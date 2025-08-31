@@ -57,7 +57,7 @@ const playGame = async (userId, gameId, betAmount, targetLevel = null) => {
       winAmount = won ? betAmount * game.win_multiplier : 0;
     }
 
-    const netAmount = won ? winAmount - betAmount : -betAmount;
+    const netAmount = won ? winAmount - betAmount : betAmount;
     const newBalance = user.balance + netAmount;
 
     await userModel.updateUserBalance(userId, newBalance, connection);
