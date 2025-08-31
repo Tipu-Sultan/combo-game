@@ -1,25 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { walletAPI } from '../../services/api';
-import toast from 'react-hot-toast';
-import { DollarSign, IndianRupee } from 'lucide-react';
-import { formatIndianCurrency } from '../../services/IndianCurrencyFormatter';
-import LoadingSpinner from '../LoadingSpinner';
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { walletAPI } from "../../services/api";
+import toast from "react-hot-toast";
+import { DollarSign, IndianRupee } from "lucide-react";
+import { formatIndianCurrency } from "../../services/IndianCurrencyFormatter";
+import LoadingSpinner from "../LoadingSpinner";
 
 const Wallet = () => {
   const { user, refreshUserData } = useAuth();
-  const [depositAmount, setDepositAmount] = useState('');
-  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [depositAmount, setDepositAmount] = useState("");
+  const [withdrawAmount, setWithdrawAmount] = useState("");
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
+  const [depositLoading, setDepositLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(false);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
+        setFetchLoading(true);
         const transactionData = await walletAPI.getTransactions();
         setTransactions(transactionData);
+        setFetchLoading(false);
       } catch (error) {
-        console.error('Failed to fetch transactions:', error);
+        setFetchLoading(false);
+        console.error("Failed to fetch transactions:", error);
       }
     };
     fetchTransactions();
@@ -27,43 +32,45 @@ const Wallet = () => {
 
   const handleDeposit = async () => {
     if (!depositAmount || isNaN(depositAmount) || depositAmount <= 0) {
-      toast.error('Please enter a valid deposit amount');
+      toast.error("Please enter a valid deposit amount");
       return;
     }
 
     try {
-      setLoading(true);
+      setDepositLoading(true);
       await walletAPI.deposit(parseFloat(depositAmount));
       await refreshUserData();
-      toast.success('Deposit successful!');
-      setDepositAmount('');
+      toast.success("Deposit successful!");
+      setDepositAmount("");
       const transactionData = await walletAPI.getTransactions();
       setTransactions(transactionData);
+      setDepositLoading(false);
     } catch (error) {
-      console.error('Deposit failed:', error);
+      console.error("Deposit failed:", error);
     } finally {
-      setLoading(false);
+      setDepositLoading(false);
     }
   };
 
   const handleWithdraw = async () => {
     if (!withdrawAmount || isNaN(withdrawAmount) || withdrawAmount <= 0) {
-      toast.error('Please enter a valid withdrawal amount');
+      toast.error("Please enter a valid withdrawal amount");
       return;
     }
 
     try {
-      setLoading(true);
+      setWithdrawLoading(true);
       await walletAPI.withdraw(parseFloat(withdrawAmount));
       await refreshUserData();
-      toast.success('Withdrawal successful!');
-      setWithdrawAmount('');
+      toast.success("Withdrawal successful!");
+      setWithdrawAmount("");
       const transactionData = await walletAPI.getTransactions();
       setTransactions(transactionData);
+      setWithdrawLoading(false);
     } catch (error) {
-      console.error('Withdrawal failed:', error);
+      console.error("Withdrawal failed:", error);
     } finally {
-      setLoading(false);
+      setWithdrawLoading(false);
     }
   };
 
@@ -71,58 +78,64 @@ const Wallet = () => {
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Wallet</h1>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Balance: {formatIndianCurrency(user?.balance) || 0}</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Balance: {formatIndianCurrency(user?.balance) || 0}
+            </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Deposit Amount</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Deposit Amount
+                </label>
                 <div className="flex items-center space-x-4">
                   <input
-                      type="text"
-                      value={depositAmount}
-                      onChange={(e) => {
-                          const newValue = e.target.value;
-                          // Allow empty string or a valid number (with optional decimal point)
-                          if (newValue === '' || /^\d*\.?\d*$/.test(newValue)) {
-                              setDepositAmount(newValue);
-                          }
-                      }}
-                      className="block w-50 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Amount"
+                    type="text"
+                    value={depositAmount}
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      // Allow empty string or a valid number (with optional decimal point)
+                      if (newValue === "" || /^\d*\.?\d*$/.test(newValue)) {
+                        setDepositAmount(newValue);
+                      }
+                    }}
+                    className="block w-50 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Amount"
                   />
                   <button
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                     onClick={handleDeposit}
-                    disabled={loading}
+                    disabled={depositLoading}
                   >
-                    Deposit
+                    {depositLoading?'Depositing...':'Deposit'}
                   </button>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Withdraw Amount</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Withdraw Amount
+                </label>
                 <div className="flex items-center space-x-4">
                   <input
-                      type="text"
-                      value={withdrawAmount}
-                      onChange={(e) => {
-                          const newValue = e.target.value;
-                          // Allow empty string or a valid number (with optional decimal point)
-                          if (newValue === '' || /^\d*\.?\d*$/.test(newValue)) {
-                              setWithdrawAmount(newValue);
-                          }
-                      }}
-                      className="block w-50 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Amount"
+                    type="text"
+                    value={withdrawAmount}
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      // Allow empty string or a valid number (with optional decimal point)
+                      if (newValue === "" || /^\d*\.?\d*$/.test(newValue)) {
+                        setWithdrawAmount(newValue);
+                      }
+                    }}
+                    className="block w-50 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Amount"
                   />
                   <button
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                     onClick={handleWithdraw}
-                    disabled={loading}
+                    disabled={withdrawLoading}
                   >
-                    Withdraw
+                    {withdrawLoading?'Withdrawing...':'Withdraw'}
                   </button>
                 </div>
               </div>
@@ -130,24 +143,44 @@ const Wallet = () => {
           </div>
 
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Transactions</h2>
-            {transactions.length === 0 ? (
-              <p className="text-gray-600">
-                No transactions yet.
-                </p>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Recent Transactions
+            </h2>
+            {fetchLoading ? (
+              <div>
+                <LoadingSpinner />
+              </div>
+            ) : transactions?.length === 0 ? (
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <p className="text-gray-600">No transactions yet.</p>
+              </div>
             ) : (
               <div className="space-y-4">
                 {transactions.map((tx) => (
-                  <div key={tx.id} className="flex items-center justify-between border-b py-2">
+                  <div
+                    key={tx.id}
+                    className="flex items-center justify-between border-b py-2"
+                  >
                     <div className="flex items-center">
                       <IndianRupee className="h-5 w-5 text-gray-400 mr-2" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{tx.type}</p>
-                        <p className="text-sm text-gray-600">{new Date(tx.created_at).toLocaleString()}</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {tx.type}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {new Date(tx.created_at).toLocaleString()}
+                        </p>
                       </div>
                     </div>
-                    <p className={`text-sm font-semibold ${tx.type === 'deposit' ? 'text-green-600' : 'text-red-600'}`}>
-                      {tx.type === 'deposit' ? '+' : '-'}{formatIndianCurrency(tx.amount)}
+                    <p
+                      className={`text-sm font-semibold ${
+                        tx.type === "deposit"
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {tx.type === "deposit" ? "+" : "-"}
+                      {formatIndianCurrency(tx.amount)}
                     </p>
                   </div>
                 ))}
