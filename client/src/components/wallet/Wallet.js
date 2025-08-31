@@ -4,6 +4,7 @@ import { walletAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import { DollarSign, IndianRupee } from 'lucide-react';
 import { formatIndianCurrency } from '../../services/IndianCurrencyFormatter';
+import LoadingSpinner from '../LoadingSpinner';
 
 const Wallet = () => {
   const { user, refreshUserData } = useAuth();
@@ -131,7 +132,11 @@ const Wallet = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Transactions</h2>
             {transactions.length === 0 ? (
-              <p className="text-gray-600">No transactions yet.</p>
+              <p className="text-gray-600">
+                No transactions yet.
+                <br></br>
+                <LoadingSpinner/>
+                </p>
             ) : (
               <div className="space-y-4">
                 {transactions.map((tx) => (

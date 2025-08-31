@@ -3,6 +3,7 @@ import { useGame } from '../../contexts/GameContext';
 import { Clock, DollarSign, Trophy, PlayCircle, IndianRupee } from 'lucide-react';
 import { walletAPI } from '../../services/api';
 import { formatIndianCurrency } from '../../services/IndianCurrencyFormatter';
+import LoadingSpinner from '../LoadingSpinner';
 
 const History = () => {
   const { loading } = useGame();
@@ -48,7 +49,10 @@ const History = () => {
             </div>
           ) : gameStatistics?.length === 0 ? (
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <p className="text-gray-600">No game statistics available.</p>
+              <p className="text-gray-600">
+                No game statistics available.
+                <LoadingSpinner/>
+                </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -81,7 +85,10 @@ const History = () => {
           </div>
         ) : transactions.length === 0 ? (
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <p className="text-gray-600">No transactions yet.</p>
+            <p className="text-gray-600">
+              No transactions yet.
+                <LoadingSpinner/>
+              </p>
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-lg p-6">
