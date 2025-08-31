@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      setLoading(true);
       const response = await authAPI.login(credentials);
       const userData = await userAPI.getProfile();
       setUser(userData);
@@ -49,14 +48,11 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       setIsAuthenticated(false);
       throw error;
-    } finally {
-      setLoading(false);
     }
   };
 
   const register = async (userData) => {
     try {
-      setLoading(true);
       const response = await authAPI.register(userData);
       const userProfile = await userAPI.getProfile();
       setUser(userProfile);
@@ -66,8 +62,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       setIsAuthenticated(false);
       throw error;
-    } finally {
-      setLoading(false);
     }
   };
 
